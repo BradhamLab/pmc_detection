@@ -577,7 +577,7 @@ def find_pmcs(
     for region in measure.regionprops(labels):
         if region.area < min_area:
             logging.info(
-                "Label %s does not meet area threshold. Remvoing.", region.label
+                "Label %s does not meet area threshold. Removing.", region.label
             )
             assign_to_label(labels, region, slc=None, new_label=0)
     renumber_labels(labels)

@@ -1,11 +1,11 @@
 ilastik:
   model: models/40x_pmc_seg.ilp
-  loc: /home/dakota/Downloads/ilastik-1.3.3post3-Linux/run_ilastik.sh
+  loc: /projectnb/bradham/Ilastik/ilastik-1.3.3post3-Linux/run_ilastik.sh
 input:
-  logfile: /home/dakota/Data/icat_embryos/Nahomie/Nahomie_icat_embryo_log.csv
-  datadir: /home/dakota/Data/icat_embryos/Nahomie
+  logfile: files/dmso_samples.csv
+  datadir: /projectnb/bradham/data/big_hcr_fish
 output:
-  dir: data/
+  dir: output/
 quant:
   genes:
     sm50:

@@ -1,17 +1,26 @@
 import os
+import pathlib
 import pandas as pd
 
 
-configfile: "files/chris_config.yaml"
+configfile: "files/config.yaml"
 
 
 OUTDIR = config["output"]["dir"]
+DATA_DIR = pathlib.Path(config["input"]["datadir"])
 
 # assumed unique row identify linking to embryo name
-embryo_log = pd.read_csv(config["input"]["logfile"], index_col=0)
-EMBRYOS = glob_wildcards(
-    os.path.join(config["input"]["datadir"], "{embryo}.nd2")
-).embryo
+samples = pd.read_csv(config["input"]["logfile"])
+assert "file" in samples.columns
+samples = samples.set_index(
+    samples.apply(lambda x: x.file.replace("/", "_").split(".")[0], axis=1)
+)
+for emb in samples.file:
+    emb_path = DATA_DIR.joinpath(emb)
+    if not emb_path.exists():
+        print(f"{emb_path} not found")
+
+print("Samples:\n\t" + "\n\t".join(samples.index) + "\n")
 
 
 rule all:
@@ -20,18 +29,21 @@ rule all:
 
 
 def get_embryo_param(wc, col):
-    return embryo_log.at[wc.embryo, col]
+    return samples.at[wc.embryo, col]
+
+
+def get_image(wc):
+    return DATA_DIR.joinpath(samples.loc[wc.embryo, "file"])
 
 
 rule normalize_pmc_stains:
     input:
-        image=os.path.join(config["input"]["datadir"], "{embryo}.nd2"),
+        image=lambda wc: get_image(wc),
     params:
         channel_name="pmc",
         channels=lambda wc: get_embryo_param(wc, "channel_order"),
-        z_start=lambda wc: get_embryo_param(wc, "z-start"),
-        z_end=lambda wc: get_embryo_param(wc, "z-end"),
-        itensipy=config["preprocessing"]["intensipy"],
+        z_start=lambda wc: get_embryo_param(wc, "z_start"),
+        z_end=lambda wc: get_embryo_param(wc, "z_end"),
     output:
         h5=temp(
             os.path.join(OUTDIR, "pmc_norm", "{embryo}.h5"),
@@ -76,13 +88,13 @@ rule label_pmcs:
 
 rule quantify_expression:
     input:
-        image=os.path.join(config["input"]["datadir"], "{embryo}.nd2"),
+        image=lambda wc: get_image(wc),
         labels=os.path.join(OUTDIR, "labels", "{embryo}_pmc_labels.h5"),
     params:
         gene_params=config["quant"]["genes"],
         channels=lambda wc: get_embryo_param(wc, "channel_order"),
-        z_start=lambda wc: get_embryo_param(wc, "z-start"),
-        z_end=lambda wc: get_embryo_param(wc, "z-end"),
+        z_start=lambda wc: get_embryo_param(wc, "z_start"),
+        z_end=lambda wc: get_embryo_param(wc, "z_end"),
         crop_image=True,
         quant_method="both",
     output:
@@ -98,7 +110,7 @@ rule quantify_expression:
 
 rule combine_counts:
     input:
-        expand(os.path.join(OUTDIR, "counts", "{embryo}.csv"), embryo=EMBRYOS),
+        expand(os.path.join(OUTDIR, "counts", "{embryo}.csv"), embryo=samples.index),
     output:
         os.path.join(OUTDIR, "final", "counts.csv"),
     script:
