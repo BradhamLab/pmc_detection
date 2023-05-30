@@ -4,6 +4,7 @@ import pandas as pd
 
 
 configfile: "files/config.yaml"
+configfile: "files/config.yaml"
 
 
 OUTDIR = config["output"]["dir"]
