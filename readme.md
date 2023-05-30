@@ -47,8 +47,8 @@ As noted above, the workflow expects a log file containing meta data fore ach im
 
 1. An index in the first column mapping file names for files in `datadir` to their meta data in the log file
 2. `channel_order`: a column containing ";" delimited names for each channel in the image (e.g. "pmc;sm50;pks2")
-3. `z-start`: z-slice where PMC signal starts, 0 and closed indexed.
-4. `z-stop`: z-slice where PMC signal ends, 0 and opened indexed (e.g. if slice 15 has the last PMC signal, `z-stop` should be set to `16`)
+3. `z_start`: z-slice where PMC signal starts, 0 and closed indexed.
+4. `z_end`: z-slice where PMC signal ends, 0 and opened indexed (e.g. if slice 15 has the last PMC signal, `z_end` should be set to `16`)
 
 ## Implementation
 
