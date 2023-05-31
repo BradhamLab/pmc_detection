@@ -2,9 +2,9 @@ import pandas as pd
 
 if __name__ == '__main__':
     try:
-        snakmake
+        snakemake
     except NameError:
         snakemake = None
     if snakemake is not None:
-        embryo_counts = pd.concat[pd.read_csv(x) for x in snakemake.input]
-        embryo_counts.to_csv(snakemake.output)
+        embryo_counts = pd.concat([pd.read_csv(x) for x in snakemake.input['counts']])
+        embryo_counts.to_csv(snakemake.output['final'])

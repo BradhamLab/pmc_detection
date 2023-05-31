@@ -111,8 +111,10 @@ rule quantify_expression:
 
 rule combine_counts:
     input:
-        expand(os.path.join(OUTDIR, "counts", "{embryo}.csv"), embryo=samples.index),
+        counts=expand(
+            os.path.join(OUTDIR, "counts", "{embryo}.csv"), embryo=samples.index
+        ),
     output:
-        os.path.join(OUTDIR, "final", "counts.csv"),
+        final=os.path.join(OUTDIR, "final", "counts.csv"),
     script:
         "scripts/combine_counts.py"
