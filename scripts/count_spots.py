@@ -376,7 +376,7 @@ def quantify_expression(
         if crop_image:  # match original shape if cropped
             counts_3d = utils.pad_to_shape(counts_3d, fish_img.shape)
     if "intensity" in measures:
-        intensities, intense_3d = average_intensity(smoothed, labels)
+        intensities, intense_3d = average_intensity(smoothed, cropped_labels)
         quant["intensity"] = intensities
         if crop_image:  # match original shape if cropped
             intense_3d = utils.pad_to_shape(intense_3d, fish_img.shape)
